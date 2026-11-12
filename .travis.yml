@@ -1,4 +1,4 @@
-dist: xenial
+dist: focal
 language: ruby
 sudo: false
 
@@ -19,10 +19,8 @@ addons:
   postgresql: 10
   chrome: stable
   apt:
-    sources:
-      - sourceline: "ppa:jonathonf/ffmpeg-3"
-      - sourceline: "ppa:ubuntuhandbook1/apps"
     packages:
+      - libatomic1
       - ffmpeg
       - mupdf
       - mupdf-tools
@@ -30,12 +28,13 @@ addons:
 
 bundler_args: --jobs 3 --retry 3
 before_install:
+  - nvm install 26.13.1
   - "rm ${BUNDLE_GEMFILE}.lock"
   - "travis_retry gem update --system"
   - "travis_retry gem install bundler"
   - "[[ -z $encrypted_0fb9444d0374_key && -z $encrypted_0fb9444d0374_iv ]] || openssl aes-256-cbc -K $encrypted_0fb9444d0374_key -iv $encrypted_0fb9444d0374_iv -in activestorage/test/service/configurations.yml.enc -out activestorage/test/service/configurations.yml -d"
   - "[[ $GEM != 'actioncable:integration' ]] || yarn install"
-  - "[[ $GEM != 'actionview:ujs' ]] || nvm install node"
+  - "[[ $GEM != 'actionview:ujs' ]] || nvm use 26.13.1"
   - "[[ $GEM != 'actionview:ujs' ]] || node --version"
   - "[[ $GEM != 'actionview:ujs' ]] || (cd actionview && npm install)"
   - "[[ $GEM != 'railties' ]] || (curl -o- -L https://yarnpkg.com/install.sh | bash)"
@@ -88,6 +87,7 @@ matrix:
         - redis-server
         - rabbitmq-server
       before_install:
+        - nvm install 26.13.1
         - "[ -f /tmp/beanstalkd-1.10/Makefile ] || (curl -L https://github.com/beanstalkd/beanstalkd/archive/v1.10.tar.gz | tar xz -C /tmp)"
         - "pushd /tmp/beanstalkd-1.10 && make && (./beanstalkd &); popd"
     - rvm: 2.6.0
@@ -103,6 +103,7 @@ matrix:
         - redis-server
         - rabbitmq-server
       before_install:
+        - nvm install 26.13.1
         - "[ -f /tmp/beanstalkd-1.10/Makefile ] || (curl -L https://github.com/beanstalkd/beanstalkd/archive/v1.10.tar.gz | tar xz -C /tmp)"
         - "pushd /tmp/beanstalkd-1.10 && make && (./beanstalkd &); popd"
     - rvm: ruby-head
@@ -118,6 +119,7 @@ matrix:
         - redis-server
         - rabbitmq-server
       before_install:
+        - nvm install 26.13.1
         - "rm ${BUNDLE_GEMFILE}.lock"
         - "travis_retry gem update --system"
         - "travis_retry gem install bundler"
@@ -127,6 +129,7 @@ matrix:
       env:
         - "GEM=activerecord:mysql2 MYSQL=mariadb"
       before_install:
+        - nvm install 26.13.1
         - "sudo mysql_upgrade"
         - "sudo service mysql restart"
       addons:
